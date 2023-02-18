@@ -1,7 +1,7 @@
 function submitCreate() {
     const joinId = document.querySelector('#textCreateJoin').value;
     console.log(joinId);
-    const websocket = new WebSocket('ws://localhost:8001');
+    const websocket = new WebSocket(getWebSocketServer());
     // initSocket(websocket, joinId);
     websocket.addEventListener("open", () => {
         const event = {
@@ -41,4 +41,14 @@ function doSomething(websocket) {
         }
         websocket.send(JSON.stringify(event));
     });
+}
+
+function getWebSocketServer() {
+    if (window.location.host ==="jaredblack.github.io") {
+        return "wss://triviawizard.herokuapp.com";
+    } else if (window.location.host === "localhost:5500"){
+        return "ws://localhost:8001";
+    } else {
+        throw new Error(`Unsupported host: ${window.location.host}`);
+    }
 }
