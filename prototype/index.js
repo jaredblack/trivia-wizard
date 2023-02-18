@@ -28,7 +28,7 @@ function submitAnswer(websocket) {
 
 function getWebSocketServer() {
     if (window.location.host ==="jaredblack.github.io") {
-        return "ws://triviawizard.herokuapp.com";
+        return "wss://triviawizard.herokuapp.com";
     } else if (window.location.host === "localhost:5500"){
         return "ws://localhost:8001";
     } else {
