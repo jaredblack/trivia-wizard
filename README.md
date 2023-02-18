@@ -14,6 +14,7 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 ## Basic UI notes
 - Team view - a simple page that simply displays a team's name, their current score, and a text box for them to submit the answer to the current question
 - Host view - a page that contains all the host controls. From here the host can see answers as they come in, score them as needed, and reset inputs for the next question. They can also modify game settings like point totals.
+    - Host view can also control whether or not score view shows the answers other teams put.
 - Score view - a simple page that just shows all of the teams and their associated scores, ranked in order of who's winning
 - Login view - a page that allows you to select to:
     - Host a game: create a new join ID, take you to host view.
