@@ -35,6 +35,8 @@ class Server:
             else:
                 await self.send_error(websocket, "Unknown host request type")
 
+    # actually I think I will do this clientside
+    # TODO: remove if not needed
     def generate_game_code(self):
         r = requests.get(f'https://random-word-api.herokuapp.com/word?length={GAME_CODE_LENGTH}')
         code = r.json()[0].upper()
@@ -90,9 +92,7 @@ class Server:
             await host_ws.send(message)
             
 
-    async def create(self, websocket):
-        game_code = event['gameCode'] if 'gameCode' in event else self.generate_game_code()
-
+    async def create(self, websocket, game_code):
         HOST[game_code] = websocket
         self.game_code = game_code
         print("Created a new game with game code", game_code)
@@ -133,7 +133,7 @@ class Server:
         assert event["type"] == "init"
 
         if "create" in event:
-            await self.create(websocket, event)
+            await self.create(websocket, event['gameCode'])
         else:
             await self.join(websocket, event['gameCode'])
 
