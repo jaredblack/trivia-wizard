@@ -9,14 +9,17 @@
 </head>
 <body>
     <div>
-        <label for="textCreateJoin">Create join ID:</label>
+        <label for="textCreateJoin">Create game code:</label>
         <input type="text" id="textCreateJoin">
         <button onclick="submitCreate()">Create</button>
-        <button id="doSomethingButton">do something</button>
     </div>
     <hr>
     <div>
+        <button id="prevButton">Previous</button>
+        <button id="nextButton">Next</button>
+        <p id="connectionDisplay"></p>
         <h1>Responses</h1>
+        <h2>Question <span id="questionIndex"></span></h2>
         <ul id="answerList"></ul>
     </div>
 </body>

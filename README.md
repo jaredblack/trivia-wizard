@@ -24,5 +24,19 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 ## To-do
 - Create *basic* prototype with simplified versions of the team view and host view and run that locally.
 
+## Backend features
+### Host
+- Create game code
+- Send score update (propogates to the score view)
+- Start timer countdown. This also doubles as enabling question submission (request specifies the length of time. Relayed to the score view and maybe the player view)
+- Stop timer countdown. Also disables question submission (Relayed to score and player view)
+- Move forward a question (Returns back empty question data if new question, or the already-submitted question data)
+- Move backward a question (Returns back the question data from that previous question)
+### Player
+- Join game (return how many doubles the team gets)
+- Submit answer
+- Double (return how many remaining doubles). Only successful if timer has not been started for the current question
+
+
 ## Resources
 - [WebSockets tutorial](https://websockets.readthedocs.io/en/stable/intro/tutorial3.html)

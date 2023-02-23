@@ -9,12 +9,15 @@
 </head>
 <body>
     <div>
-        <label for="joinInput">Enter join ID:</label>
+        <label for="joinInput">Enter game code:</label>
         <input type="text" id="joinInput">
+        <label for="joinInput">Team name:</label>
+        <input type="text" id="teamNameInput">
         <button id="joinButton" onclick="submitJoin()">Join</button>
     </div>
     <hr>
     <div>
+        <h2>Question <span id="questionIndex"></span></h2>
         <label for="answerInput">Enter answer:</label>
         <input type="text" id="answerInput">
         <button id="answerButton">Send</button>

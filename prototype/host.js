@@ -1,22 +1,25 @@
+"use strict";
+window.addEventListener("DOMContentLoaded", () => {
+    const questionIndex = document.querySelector("#questionIndex");
+    questionIndex.textContent = 1;
+});
+
 function submitCreate() {
-    const joinId = document.querySelector('#textCreateJoin').value;
-    console.log(joinId);
+    const gameCode = document.querySelector('#textCreateJoin').value;
+    console.log(gameCode);
     const websocket = new WebSocket(getWebSocketServer());
-    // initSocket(websocket, joinId);
+    // initSocket(websocket, gameCode);
     websocket.addEventListener("open", () => {
         const event = {
             type: "init",
-            joinId: joinId,
+            gameCode: gameCode,
             create: true,
         };
         websocket.send(JSON.stringify(event));
     });
-    doSomething(websocket);
     receiveAnswers(websocket);
-}
-
-function initSocket(websocket, joinId) {
-
+    nextQuestion(websocket);
+    prevQuestion(websocket);
 }
 
 function receiveAnswers(websocket) {
@@ -25,20 +28,42 @@ function receiveAnswers(websocket) {
         if (obj.type == 'answer') {
             const answerList = document.querySelector("#answerList");
             const answer = document.createElement("li");
-            answer.textContent = obj.answer;
+            answer.textContent = `${obj.teamName}: ${obj.answer}`;
             answerList.appendChild(answer);
-        } else {
+        } else if (obj.type == 'success') {
             console.log(obj);
+            const connDisplay = document.querySelector("#connectionDisplay");
+            connDisplay.textContent = `Connected to ${obj.gameCode}`
+        } else if (obj.type == 'newQuestion') {
+            const questionIndex = document.querySelector("#questionIndex");
+            questionIndex.textContent = obj.questionIndex;
+            const answerList = document.querySelector("#answerList");
+            answerList.innerHTML = "";
+            for (let answer of obj.answers) {
+                const answerElement = document.createElement("li");
+                answerElement.textContent = `${answer.teamName}: ${answer.answer}`;
+                answerList.appendChild(answerElement);
+            }
         }
     });
 }
 
-function doSomething(websocket) {
-    const answerButton = document.querySelector("#doSomethingButton");
-    answerButton.addEventListener("click", () => {
+function nextQuestion(websocket) {
+    const nextButton = document.querySelector("#nextButton");
+    nextButton.addEventListener("click", () => {
         const event = {
-            type: "idk",
-        }
+            type: "next",
+        };
+        websocket.send(JSON.stringify(event));
+    });
+}
+
+function prevQuestion(websocket) {
+    const prevButton = document.querySelector("#prevButton");
+    prevButton.addEventListener("click", () => {
+        const event = {
+            type: "prev",
+        };
         websocket.send(JSON.stringify(event));
     });
 }
