@@ -6,74 +6,138 @@ import asyncio
 import os
 import signal
 
-JOIN = {}
+from pymongo import MongoClient
 
-async def host(websocket):
-    async for message in websocket:
-        event = json.loads(message)
-        print(event)
+from database import Answer, TriviaDatabase
 
-async def relay_answers(websocket, join_id):
-    async for message in websocket:
-        host_ws = JOIN[join_id]
-        if host_ws.close_code is not None:
-            print("WebSocket connection is closed.")
-            break
-        await host_ws.send(message)
-        
+HOST = {}
+PLAYERS = []
 
-async def create(websocket, join_id):
-    JOIN[join_id] = websocket
-    print("Created a new game with join id", join_id)
-    try:
-        event = {
-            "type": "info",
-            "message": "Successfully created a new game",
-        }
-        await websocket.send(json.dumps(event))
-        await host(websocket)
-    finally:
-        # del JOIN[join_id]
-        pass
-
-async def join(websocket, join_id):
-    if join_id not in JOIN:
+class Server:
+    def __init__(self) -> None:
+        asyncio.run(self.main())
+    
+    async def send_error(self, websocket, message):
         event = {
             "type": "error",
-            "message": "Invalid join id",
+            "message": message,
         }
-        print("invalid join id")
         await websocket.send(json.dumps(event))
-        return
-    print("Joined the game with join id", join_id)
-    try:
+
+
+    async def host(self, websocket):
+        async for message in websocket:
+            event = json.loads(message)
+            if event["type"] == "next":
+                await self.return_next_question(websocket)
+            elif event["type"] == "prev":
+                await self.return_prev_question(websocket)
+            else:
+                self.send_error(websocket, "Unknown host request type")
+
+
+    async def return_next_question(self, websocket):
+        self.question_index += 1
+        answers = self.db.get_answers(self.game_code, self.question_index)
+        if answers == None:
+            answers = []
         event = {
-            "type": "info",
-            "message": "Successfully joined the game",
+            "type": "newQuestion",
+            "questionIndex": self.question_index,
+            "answers": answers
         }
-        # await websocket.send(json.dumps(event))
-        await relay_answers(websocket, join_id)
-    finally:
-        del JOIN[join_id]
+        await self.update_player_question_index()
+        await websocket.send(json.dumps(event))
+
+    async def return_prev_question(self, websocket):
+        if (self.question_index > 1):
+            self.question_index -= 1
+        answers = self.db.get_answers(self.game_code, self.question_index)
+        if answers == None:
+            answers = []
+        event = {
+            "type": "newQuestion",
+            "questionIndex": self.question_index,
+            "answers": answers
+        }
+        await self.update_player_question_index()
+        await websocket.send(json.dumps(event))
+    
+    async def update_player_question_index(self):
+        event = {
+            "type": "updateQuestionIndex",
+            "questionIndex": self.question_index
+        }
+        for player in PLAYERS:
+            await player.send(json.dumps(event))
+
+    async def relay_answers(self, websocket, game_code):
+        async for message in websocket:
+            host_ws = HOST[game_code]
+            if host_ws.close_code is not None:
+                print("WebSocket connection is closed.")
+                break
+            event = json.loads(message)
+            answer = Answer(game_code, event["teamName"], event["answer"], int(event["questionIndex"]))
+            self.db.insert_answer(answer)
+            await host_ws.send(message)
+            
+
+    async def create(self, websocket, game_code):
+        HOST[game_code] = websocket
+        self.game_code = game_code
+        print("Created a new game with game code", game_code)
+        try:
+            event = {
+                "type": "success",
+                "message": "Successfully created a new game",
+                "gameCode": game_code
+            }
+            await websocket.send(json.dumps(event))
+            await self.host(websocket)
+        finally:
+            # del JOIN[game_code]
+            pass
+
+    async def join(self, websocket, game_code):
+        if game_code not in HOST:
+            self.send_error(websocket, "Invalid game code")
+            print("invalid game code")
+            await websocket.send(json.dumps(event))
+            return
+        print("Joined the game with game code", game_code)
+        PLAYERS.append(websocket)
+        try:
+            event = {
+                "type": "info",
+                "message": "Successfully joined the game",
+            }
+            # await websocket.send(json.dumps(event))
+            await self.relay_answers(websocket, game_code)
+        finally:
+            del HOST[game_code]
 
 
-async def handler(websocket):
-    message = await websocket.recv()
-    event = json.loads(message)
-    assert event["type"] == "init"
+    async def handler(self, websocket):
+        message = await websocket.recv()
+        event = json.loads(message)
+        assert event["type"] == "init"
 
-    if "create" in event:
-        await create(websocket, event['joinId'])
-    else:
-        await join(websocket, event['joinId'])
+        if "create" in event:
+            await self.create(websocket, event['gameCode'])
+        else:
+            await self.join(websocket, event['gameCode'])
 
-async def main():
-    loop = asyncio.get_running_loop()
-    stop = loop.create_future()
-    loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
-    port = int(os.environ.get("PORT", "8001"))
-    async with websockets.serve(handler, "", port):
-        await stop
+    async def main(self):
+        self.db = TriviaDatabase()
+        self.question_index = 1
+        loop = asyncio.get_running_loop()
+        stop = loop.create_future()
+        loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
+        port = int(os.environ.get("PORT", "8001"))
+        async with websockets.serve(self.handler, "", port):
+            await stop
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    Server()
+    
