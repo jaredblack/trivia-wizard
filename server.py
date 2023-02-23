@@ -33,7 +33,7 @@ class Server:
             elif event["type"] == "prev":
                 await self.return_prev_question(websocket)
             else:
-                self.send_error(websocket, "Unknown host request type")
+                await self.send_error(websocket, "Unknown host request type")
 
 
     async def return_next_question(self, websocket):
@@ -101,7 +101,7 @@ class Server:
 
     async def join(self, websocket, game_code):
         if game_code not in HOST:
-            self.send_error(websocket, "Invalid game code")
+            await self.send_error(websocket, "Invalid game code")
             print("invalid game code")
             await websocket.send(json.dumps(event))
             return
