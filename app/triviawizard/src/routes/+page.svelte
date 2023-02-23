@@ -1,11 +1,10 @@
 <main class="container">
-
     <section>
         <div>
-            <a href="/host" role="button">Start New Game</a>
+            <a href="/host"><button>Start New Game</button></a>
         </div>
         <div>
-            <a href="/play" role="button">Join Game</a>
+            <a href="/play"><button>Join Game</button></a>
         </div>
     </section>
 </main>
