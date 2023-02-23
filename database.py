@@ -44,6 +44,9 @@ class TriviaDatabase:
     def update_answer(self, answer: Answer):
         self.answers.update_one({"gameCode": answer.gameCode, "questionIndex": answer.questionIndex, "team": answer.team}, {"$set": asdict(answer)})
 
+    def game_code_exists(self, game_code):
+        return self.get_game(game_code) != None
+
 if __name__ == "__main__":
     db = TriviaDatabase()
     print(db.get_answers("TEST1", 5))

@@ -1,17 +1,17 @@
 import itertools
 import json
 import secrets
+import requests
 import websockets
 import asyncio
 import os
 import signal
 
-from pymongo import MongoClient
-
 from database import Answer, TriviaDatabase
 
 HOST = {}
 PLAYERS = []
+GAME_CODE_LENGTH = 5
 
 class Server:
     def __init__(self) -> None:
@@ -34,6 +34,13 @@ class Server:
                 await self.return_prev_question(websocket)
             else:
                 await self.send_error(websocket, "Unknown host request type")
+
+    def generate_game_code(self):
+        r = requests.get(f'https://random-word-api.herokuapp.com/word?length={GAME_CODE_LENGTH}')
+        code = r.json()[0].upper()
+        if self.db.game_code_exists(code):
+            return self.generate_game_code()
+        return code
 
 
     async def return_next_question(self, websocket):
@@ -83,7 +90,9 @@ class Server:
             await host_ws.send(message)
             
 
-    async def create(self, websocket, game_code):
+    async def create(self, websocket):
+        game_code = event['gameCode'] if 'gameCode' in event else self.generate_game_code()
+
         HOST[game_code] = websocket
         self.game_code = game_code
         print("Created a new game with game code", game_code)
@@ -124,7 +133,7 @@ class Server:
         assert event["type"] == "init"
 
         if "create" in event:
-            await self.create(websocket, event['gameCode'])
+            await self.create(websocket, event)
         else:
             await self.join(websocket, event['gameCode'])
 
