@@ -73,6 +73,7 @@ class Server:
         await websocket.send(json.dumps(event))
     
     async def update_player_question_index(self):
+        # TODO: include info about whether each team needs to provide an answer for this question or not.
         event = {
             "type": "updateQuestionIndex",
             "questionIndex": self.question_index
@@ -86,9 +87,15 @@ class Server:
             if host_ws.close_code is not None:
                 print("WebSocket connection is closed.")
                 break
+            # TODO: Should validate here that the question index passed actually matches the server's index
             event = json.loads(message)
             answer = Answer(game_code, event["teamName"], event["answer"], int(event["questionIndex"]))
             self.db.insert_answer(answer)
+            answer_received_event = {
+                "type": "answerReceived",
+                "questionIndex": self.question_index
+            }
+            await websocket.send(json.dumps(answer_received_event))
             await host_ws.send(message)
             
 
@@ -112,16 +119,17 @@ class Server:
         if game_code not in HOST:
             await self.send_error(websocket, "Invalid game code")
             print("invalid game code")
-            await websocket.send(json.dumps(event))
             return
         print("Joined the game with game code", game_code)
         PLAYERS.append(websocket)
         try:
             event = {
-                "type": "info",
+                "type": "success",
                 "message": "Successfully joined the game",
+                "gameCode": game_code,
+                "questionIndex": self.question_index
             }
-            # await websocket.send(json.dumps(event))
+            await websocket.send(json.dumps(event))
             await self.relay_answers(websocket, game_code)
         finally:
             del HOST[game_code]
