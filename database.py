@@ -30,7 +30,6 @@ class TriviaDatabase:
     
     def get_answers(self, gameCode, questionIndex):
         answers = self.answers.find({"gameCode": gameCode, "questionIndex": questionIndex})
-        print("answers")
         l = []
         for answer in answers:
             print(answer)

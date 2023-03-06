@@ -41,7 +41,7 @@ function submitAnswer(websocket) {
 function receiveMessages(websocket) {
     websocket.addEventListener("message", ({data}) => {
         const obj = JSON.parse(data);
-        if (obj.type == 'updateQuestionIndex') {
+        if (obj.type == 'updatePlayerQuestionIndex') {
             const questionIndex = document.querySelector("#questionIndex");
             questionIndex.textContent = obj.questionIndex;
         }

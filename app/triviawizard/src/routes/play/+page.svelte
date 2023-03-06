@@ -50,8 +50,9 @@
                 questionIndex = obj.questionIndex;
             } else if (obj.type === "answerReceived") {
                 state = States.WaitForNextQuestion;
-            } else if (obj.type === "updateQuestionIndex") {
+            } else if (obj.type === "updatePlayerQuestionIndex") {
                 state = States.InputAnswer;
+                answerText = "";
                 questionIndex = obj.questionIndex;
             }
         });

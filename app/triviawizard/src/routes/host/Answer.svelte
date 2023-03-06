@@ -4,11 +4,11 @@
         <p>{answerText}</p>
     </div>
     <div class="score-controls">
-        <button class="increment-button secondary"><span class="material-symbols-outlined">
+        <button class="circular-icon-button secondary"><span class="material-symbols-outlined">
             close
             </span></button>
         <h2 class="score-display">{teamScore}</h2>
-        <button class="increment-button secondary"><span class="material-symbols-outlined">
+        <button class="circular-icon-button secondary"><span class="material-symbols-outlined">
             done
             </span></button>
     </div>
@@ -45,25 +45,9 @@
         padding: 0;
     }
 
-    .increment-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        margin: 0;
-        width: 50px;
-        height: 50px;
-        padding: 0;
-        border: none;
-    }
 
-    .material-symbols-outlined {
-        display: inline-block;
-        width: 24px;
-        height: 24px;
-        font-size: 24px;
-        text-align: center;
-    }
+
+
 
     h5 {
         margin: 0;
@@ -73,12 +57,6 @@
         margin: 0;
     }
 
-    .material-symbols-outlined {
-        font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 48
-    }
+
 
 </style>

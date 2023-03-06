@@ -13,6 +13,7 @@ HOST = {}
 PLAYERS = []
 GAME_CODE_LENGTH = 5
 
+# TODO: Game state (code, question index, players, host) should be abstracted away in some sort of Game class. Right now everything is bound to the instance of the server which means the game code doesn't really do anything
 class Server:
     def __init__(self) -> None:
         asyncio.run(self.main())
@@ -34,16 +35,6 @@ class Server:
                 await self.return_prev_question(websocket)
             else:
                 await self.send_error(websocket, "Unknown host request type")
-
-    # actually I think I will do this clientside
-    # TODO: remove if not needed
-    def generate_game_code(self):
-        r = requests.get(f'https://random-word-api.herokuapp.com/word?length={GAME_CODE_LENGTH}')
-        code = r.json()[0].upper()
-        if self.db.game_code_exists(code):
-            return self.generate_game_code()
-        return code
-
 
     async def return_next_question(self, websocket):
         self.question_index += 1
@@ -75,7 +66,7 @@ class Server:
     async def update_player_question_index(self):
         # TODO: include info about whether each team needs to provide an answer for this question or not.
         event = {
-            "type": "updateQuestionIndex",
+            "type": "updatePlayerQuestionIndex",
             "questionIndex": self.question_index
         }
         for player in PLAYERS:
@@ -107,7 +98,8 @@ class Server:
             event = {
                 "type": "success",
                 "message": "Successfully created a new game",
-                "gameCode": game_code
+                "gameCode": game_code,
+                "questionIndex": self.question_index
             }
             await websocket.send(json.dumps(event))
             await self.host(websocket)
