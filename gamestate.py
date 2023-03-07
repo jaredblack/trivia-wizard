@@ -31,4 +31,5 @@ class Game:
     def add_answer(self, answer):
         self.db.insert_answer(answer)
     
-    
+    def update_score(self, teamName, score):
+        self.db.update_score(self.game_code, teamName, score)

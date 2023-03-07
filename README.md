@@ -37,6 +37,10 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 - Submit answer
 - Double (return how many remaining doubles). Only successful if timer has not been started for the current question
 
+### Reconnection
+- Need to allow for a quick and easy way to reconnect if the socket connection is lost
+- Only allow for one host at a time - if there's an open host socket then we should not allow another host to join
+
 
 ## Resources
 - [WebSockets tutorial](https://websockets.readthedocs.io/en/stable/intro/tutorial3.html)

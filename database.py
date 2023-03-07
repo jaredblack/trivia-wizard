@@ -17,6 +17,7 @@ class TriviaDatabase:
         self.db = self.get_database()
         self.games = self.db["games"]
         self.answers = self.db["answers"]
+        self.scores = self.db["scores"]
         
     def get_database(self):  
         username = os.environ.get("TRIVIA_MONGO_USERNAME")
@@ -45,6 +46,18 @@ class TriviaDatabase:
 
     def game_code_exists(self, game_code):
         return self.get_game(game_code) != None
+    
+    def update_scores(self, gameCode, teamName, score):
+        self.scores.update_one({"gameCode": gameCode, "teamName": teamName}, {"$set": {"score": score}}, upsert=True)
+
+    def get_scores(self, gameCode):
+        scores = self.scores.find({"gameCode": gameCode})
+        l = []
+        for score in scores:
+            score.pop("_id")
+            l.append(score)
+        return l
+        
 
 if __name__ == "__main__":
     db = TriviaDatabase()

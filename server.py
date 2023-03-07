@@ -29,8 +29,14 @@ class Server:
             elif event["type"] == "prev":
                 game.decrement_question_index()
                 await self.broadcast_new_question(game)
+            elif event["type"] == "updateScore":
+                await self.update_score(game, event["teamName"], event["score"])
             else:
                 await self.send_error(host_socket, "Unknown host request type")
+
+    async def update_score(self, game, teamName, score):
+        game.update_score(teamName, score)
+        # broadcast to score view
 
     async def broadcast_new_question(self, game):
         await self.update_player_question_index(game)
