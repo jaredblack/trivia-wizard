@@ -1,7 +1,4 @@
-import itertools
 import json
-import secrets
-import requests
 import websockets
 import asyncio
 import os
