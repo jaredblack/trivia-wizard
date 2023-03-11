@@ -19,14 +19,23 @@
     export let answerText = "This is the answer text";
     export let teamScore = 0;
     export let updateTeamScore = (teamName: string, teamScore: number) => {};
+    export let markedCorrect = undefined;
+    let pointsAdded = false;
 
     function markQuestionCorrect() {
-        teamScore += 50;
-        updateTeamScore(teamName, teamScore);
+        if (!pointsAdded) {
+            teamScore += 50;
+            updateTeamScore(teamName, teamScore);
+        }
+        pointsAdded = true;
     }
 
     function markQuestionIncorrect() {
-        updateTeamScore(teamName, teamScore);
+        if (pointsAdded) {
+            teamScore -= 50;
+            pointsAdded = false;
+            updateTeamScore(teamName, teamScore);
+        }
     }
 </script>
 
@@ -54,10 +63,6 @@
         margin: 0 10px 0 10px;
         padding: 0;
     }
-
-
-
-
 
     h5 {
         margin: 0;
