@@ -57,6 +57,12 @@ class TriviaDatabase:
             score.pop("_id")
             l.append(score)
         return l
+    
+    def get_team_score(self, game_code, team_name):
+        score_obj = self.scores.find_one({"gameCode": game_code, "teamName": team_name})
+        if score_obj is None:
+            return 0
+        return score_obj["score"]
         
 
 if __name__ == "__main__":

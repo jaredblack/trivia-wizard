@@ -2,11 +2,13 @@ export class AnswerObject {
     teamName: string;
     answer: string;
     questionIndex: string;
+    teamScore: number;
 
-    constructor(teamName: string, answer: string, questionIndex: string) {
+    constructor(teamName: string, answer: string, questionIndex: string, teamScore: number) {
         this.teamName = teamName;
         this.answer = answer;
         this.questionIndex = questionIndex;
+        this.teamScore = teamScore;
     }
 }
 

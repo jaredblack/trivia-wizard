@@ -116,7 +116,7 @@
 				<p>No answers yet</p>
 			{:else}
 				{#each answerList as answer}
-					<Answer answerText={answer.answer} teamName={answer.teamName} updateTeamScore={updateTeamScore}/>
+					<Answer answerText={answer.answer} teamName={answer.teamName} updateTeamScore={updateTeamScore} teamScore={answer.teamScore}/>
 				{/each}
 			{/if}
 		</div>

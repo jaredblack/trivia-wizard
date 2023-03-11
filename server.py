@@ -45,12 +45,18 @@ class Server:
 
     async def update_host_question(self, game):
         answers = game.get_answers()
+        self.inject_answers_with_scores(answers, game)
         event = {
             "type": "newQuestion",
             "questionIndex": game.question_index,
             "answers": answers
         }
         await game.host_socket.send(json.dumps(event))
+    
+    def inject_answers_with_scores(self, answers, game):
+        for answer in answers:
+            answer["teamScore"] = game.get_team_score(answer["teamName"])
+        return answers
     
     async def update_player_question_index(self, game):
         # TODO: include info about whether each team needs to provide an answer for this question or not.
@@ -68,15 +74,16 @@ class Server:
                 print("WebSocket connection is closed.")
                 break
             # TODO: Should validate here that the question index passed actually matches the server's index
-            event = json.loads(message)
-            answer = Answer(game.game_code, event["teamName"], event["answer"], int(event["questionIndex"]))
+            answer_event = json.loads(message)
+            answer = Answer(game.game_code, answer_event["teamName"], answer_event["answer"], int(answer_event["questionIndex"]))
             game.add_answer(answer)
             answer_received_event = {
                 "type": "answerReceived",
                 "questionIndex": game.question_index
             }
+            answer_event["teamScore"] = game.get_team_score(answer_event["teamName"])
             await player_socket.send(json.dumps(answer_received_event))
-            await host_ws.send(message)
+            await host_ws.send(json.dumps(answer_event))
             
     async def update_score_view(self, game):
         event = {

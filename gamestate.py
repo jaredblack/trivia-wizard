@@ -37,3 +37,6 @@ class Game:
 
     def get_scores(self):
         return self.db.get_scores(self.game_code)
+    
+    def get_team_score(self, team_name):
+        return self.db.get_team_score(self.game_code, team_name)
