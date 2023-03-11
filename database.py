@@ -32,7 +32,7 @@ class TriviaDatabase:
     def get_answers(self, gameCode, questionIndex):
         answers = self.answers.find({"gameCode": gameCode, "questionIndex": questionIndex})
         l = []
-        print(f"got {len(l)} answers from db")
+        print(f"got {len(answers)} answers from db")
         for answer in answers:
             answer.pop("_id")
             l.append(answer)
