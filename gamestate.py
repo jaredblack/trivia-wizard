@@ -40,3 +40,8 @@ class Game:
     
     def get_team_score(self, team_name):
         return self.db.get_team_score(self.game_code, team_name)
+    
+    def update_points_given(self, team_name, points_given):
+        # at the current question index for the given team name, find the answer and update the score
+        self.db.update_points_given(self.game_code, team_name, self.question_index, points_given)
+        pass

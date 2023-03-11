@@ -63,6 +63,9 @@ class TriviaDatabase:
         if score_obj is None:
             return 0
         return score_obj["score"]
+    
+    def update_points_given(self, gameCode, teamName, questionIndex, pointsGiven):
+        self.answers.update_one({"gameCode": gameCode, "teamName": teamName, "questionIndex": questionIndex}, {"$set": {"pointsGiven": pointsGiven}})
         
 
 if __name__ == "__main__":

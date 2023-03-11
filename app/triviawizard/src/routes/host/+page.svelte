@@ -9,11 +9,12 @@
 	let answerList: AnswerObject[] = [];
 	let questionIndex = 0;
 
-	const updateTeamScore = (teamName: string, teamScore: number) => {
+	const updateTeamScore = (teamName: string, teamScore: number, pointsGiven: number) => {
 		const event = {
 			type: 'updateScore',
 			teamName: teamName,
-			score: teamScore
+			score: teamScore,
+			pointsGiven: pointsGiven
 		};
 		websocket.send(JSON.stringify(event));
 	};
@@ -116,7 +117,7 @@
 				<p>No answers yet</p>
 			{:else}
 				{#each answerList as answer}
-					<Answer answerText={answer.answer} teamName={answer.teamName} updateTeamScore={updateTeamScore} teamScore={answer.teamScore}/>
+					<Answer answerText={answer.answer} teamName={answer.teamName} updateTeamScore={updateTeamScore} teamScore={answer.teamScore} pointsGiven={answer.pointsGiven}/>
 				{/each}
 			{/if}
 		</div>

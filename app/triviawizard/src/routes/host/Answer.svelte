@@ -15,17 +15,27 @@
 </div>
 
 <script lang="ts">
+	import { onMount } from "svelte";
+
+
     export let teamName = "Team 1";
     export let answerText = "This is the answer text";
     export let teamScore = 0;
-    export let updateTeamScore = (teamName: string, teamScore: number) => {};
-    export let markedCorrect = undefined;
+    export let updateTeamScore = (teamName: string, teamScore: number, pointsGiven: number) => {};
+    export let pointsGiven = 0;
     let pointsAdded = false;
 
+    onMount(() => {
+        if (pointsGiven > 0) {
+            pointsAdded = true;
+        }
+    });
+
     function markQuestionCorrect() {
+        let pointsToGive = 50;
         if (!pointsAdded) {
-            teamScore += 50;
-            updateTeamScore(teamName, teamScore);
+            teamScore += pointsToGive;
+            updateTeamScore(teamName, teamScore, pointsToGive);
         }
         pointsAdded = true;
     }
@@ -34,7 +44,7 @@
         if (pointsAdded) {
             teamScore -= 50;
             pointsAdded = false;
-            updateTeamScore(teamName, teamScore);
+            updateTeamScore(teamName, teamScore, 0);
         }
     }
 </script>
