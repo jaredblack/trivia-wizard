@@ -4,11 +4,11 @@
         <p>{answerText}</p>
     </div>
     <div class="score-controls">
-        <button class="circular-icon-button secondary" on:click={markQuestionIncorrect}><span class="material-symbols-outlined">
+        <button class="circular-icon-button secondary" style="background-color: {incorrectButtonColor}" on:click={markQuestionIncorrect}><span class="material-symbols-outlined">
             close
             </span></button>
         <h2 class="score-display">{teamScore}</h2>
-        <button class="circular-icon-button secondary" on:click={markQuestionCorrect}><span class="material-symbols-outlined">
+        <button class="circular-icon-button secondary" style="background-color: {correctButtonColor}" on:click={markQuestionCorrect}><span class="material-symbols-outlined">
             done
             </span></button>
     </div>
@@ -22,8 +22,11 @@
     export let answerText = "This is the answer text";
     export let teamScore = 0;
     export let updateTeamScore = (teamName: string, teamScore: number, pointsGiven: number) => {};
-    export let pointsGiven = 0;
+    export let pointsGiven = -1;
     let pointsAdded = false;
+
+    $: correctButtonColor = pointsGiven > 0 ? 'var(--ins-color, green)' : 'var(--secondary, gray)';	
+    $: incorrectButtonColor = pointsGiven == 0 ? 'var(--del-color, red)' : 'var(--secondary, gray)';
 
     onMount(() => {
         if (pointsGiven > 0) {
@@ -32,15 +35,16 @@
     });
 
     function markQuestionCorrect() {
-        let pointsToGive = 50;
+        pointsGiven = 50;
         if (!pointsAdded) {
-            teamScore += pointsToGive;
-            updateTeamScore(teamName, teamScore, pointsToGive);
+            teamScore += pointsGiven;
+            updateTeamScore(teamName, teamScore, pointsGiven);
         }
         pointsAdded = true;
     }
 
     function markQuestionIncorrect() {
+        pointsGiven = 0;
         if (pointsAdded) {
             teamScore -= 50;
             pointsAdded = false;
