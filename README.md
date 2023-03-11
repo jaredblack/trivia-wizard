@@ -40,7 +40,10 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 ### Reconnection
 - Need to allow for a quick and easy way to reconnect if the socket connection is lost
 - Only allow for one host at a time - if there's an open host socket then we should not allow another host to join
+- TO FACILITATE THIS: listen for close on every client, and then just reconnect when that happens!
 
+### Things to explore
+- Svelte has some movement/transition things that could help make look things nice. Particularly, transitions when we reorder the score list could be cool.
 
 ## Resources
 - [WebSockets tutorial](https://websockets.readthedocs.io/en/stable/intro/tutorial3.html)

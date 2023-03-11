@@ -2,6 +2,7 @@
 	import type { AnswerObject } from '../../types';
 	import { getWebSocketServer } from '../../utils';
 	import Answer from './Answer.svelte';
+	import Timer from './Timer.svelte';
 
 	let gameCode: string;
 	let websocket: WebSocket;
@@ -112,6 +113,7 @@
 					>
 				</div>
 			</div>
+			<Timer duration={30} />
 			<h3>Answers</h3>
 			{#if answerList.length == 0}
 				<p>No answers yet</p>
