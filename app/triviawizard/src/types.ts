@@ -9,3 +9,13 @@ export class AnswerObject {
         this.questionIndex = questionIndex;
     }
 }
+
+export class TeamScore {
+    teamName: string;
+    score: number;
+
+    constructor(teamName: string, score: number) {
+        this.teamName = teamName;
+        this.score = score;
+    }
+}

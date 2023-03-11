@@ -7,6 +7,7 @@ import signal
 from database import Answer, TriviaDatabase
 from gamestate import Game
 
+# current problem: watch socket closes for some reason before score updates
 
 class Server:
     def __init__(self) -> None:
@@ -18,7 +19,6 @@ class Server:
             "message": message,
         }
         await websocket.send(json.dumps(event))
-
 
     async def host(self, host_socket, game):
         async for message in host_socket:
@@ -36,6 +36,7 @@ class Server:
 
     async def update_score(self, game, teamName, score):
         game.update_score(teamName, score)
+        await self.update_score_view(game)
         # broadcast to score view
 
     async def broadcast_new_question(self, game):
@@ -77,6 +78,17 @@ class Server:
             await player_socket.send(json.dumps(answer_received_event))
             await host_ws.send(message)
             
+    async def update_score_view(self, game):
+        event = {
+                "type": "teamScores",
+                "gameCode": game.game_code,
+                "teamScores": game.get_scores()
+        }
+
+        for socket in game.watch_sockets:
+            if socket.close_code is not None:
+                print("Watch socket connection is closed.")
+            await socket.send(json.dumps(event))
 
     async def create(self, websocket, game_code):
         game = Game(game_code, websocket)
@@ -117,16 +129,35 @@ class Server:
             # TODO: figure out what we need to delete
             pass
 
+    async def watch(self, websocket, game_code):
+        if game_code not in self.games:
+            await self.send_error(websocket, "Invalid game code")
+            print("invalid game code for watch")
+            return
+        game = self.games[game_code]
+        print("Watching the game with game code", game_code)
+        try:
+            game.watch_sockets.append(websocket)
+            await self.update_score_view(game)
+            async for message in websocket:
+                print(message)
+        finally:
+            # del HOST[game_code]
+            pass
 
     async def handler(self, websocket):
         message = await websocket.recv()
         event = json.loads(message)
         assert event["type"] == "init"
 
-        if "create" in event:
-            await self.create(websocket, event['gameCode'])
-        else:
-            await self.join(websocket, event['gameCode'])
+        match event["initType"]:
+            case "host":
+                await self.create(websocket, event['gameCode'])
+            case "player":
+                await self.join(websocket, event['gameCode'])
+            case "watch":
+                await self.watch(websocket, event['gameCode'])
+
 
     async def main(self):
         self.db = TriviaDatabase()

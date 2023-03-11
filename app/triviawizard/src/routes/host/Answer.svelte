@@ -4,20 +4,30 @@
         <p>{answerText}</p>
     </div>
     <div class="score-controls">
-        <button class="circular-icon-button secondary"><span class="material-symbols-outlined">
+        <button class="circular-icon-button secondary" on:click={markQuestionIncorrect}><span class="material-symbols-outlined">
             close
             </span></button>
         <h2 class="score-display">{teamScore}</h2>
-        <button class="circular-icon-button secondary"><span class="material-symbols-outlined">
+        <button class="circular-icon-button secondary" on:click={markQuestionCorrect}><span class="material-symbols-outlined">
             done
             </span></button>
     </div>
 </div>
 
-<script>
+<script lang="ts">
     export let teamName = "Team 1";
     export let answerText = "This is the answer text";
     export let teamScore = 0;
+    export let updateTeamScore = (teamName: string, teamScore: number) => {};
+
+    function markQuestionCorrect() {
+        teamScore += 50;
+        updateTeamScore(teamName, teamScore);
+    }
+
+    function markQuestionIncorrect() {
+        updateTeamScore(teamName, teamScore);
+    }
 </script>
 
 <style>

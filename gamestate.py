@@ -8,6 +8,7 @@ class Game:
         self.question_index = 1
         self.host_socket = host_socket
         self.players = []
+        self.watch_sockets = []
         self.db = TriviaDatabase()        
     
     def add_player(self, player_socket):
@@ -33,3 +34,6 @@ class Game:
     
     def update_score(self, teamName, score):
         self.db.update_score(self.game_code, teamName, score)
+
+    def get_scores(self):
+        return self.db.get_scores(self.game_code)

@@ -6,5 +6,8 @@
         <div>
             <a href="/play"><button>Join Game</button></a>
         </div>
+        <div>
+            <a href="/watch"><button>Watch Game</button></a>
+        </div>
     </section>
 </main>

@@ -47,7 +47,7 @@ class TriviaDatabase:
     def game_code_exists(self, game_code):
         return self.get_game(game_code) != None
     
-    def update_scores(self, gameCode, teamName, score):
+    def update_score(self, gameCode, teamName, score):
         self.scores.update_one({"gameCode": gameCode, "teamName": teamName}, {"$set": {"score": score}}, upsert=True)
 
     def get_scores(self, gameCode):

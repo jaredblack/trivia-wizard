@@ -34,6 +34,7 @@
                 type: "init",
                 gameCode: gameCode,
                 teamName: teamName,
+                initType: "player"
             };
             websocket.send(JSON.stringify(event));
         });

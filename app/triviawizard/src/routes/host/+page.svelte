@@ -9,6 +9,15 @@
 	let answerList: AnswerObject[] = [];
 	let questionIndex = 0;
 
+	const updateTeamScore = (teamName: string, teamScore: number) => {
+		const event = {
+			type: 'updateScore',
+			teamName: teamName,
+			score: teamScore
+		};
+		websocket.send(JSON.stringify(event));
+	};
+
 	async function generateGameCode() {
 		const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
 		const jsonCook = await res.json();
@@ -31,7 +40,7 @@
 			const event = {
 				type: 'init',
 				gameCode: gameCode,
-				create: true
+				initType: 'host'
 			};
 			websocket.send(JSON.stringify(event));
 		});
@@ -107,7 +116,7 @@
 				<p>No answers yet</p>
 			{:else}
 				{#each answerList as answer}
-					<Answer answerText={answer.answer} teamName={answer.teamName} />
+					<Answer answerText={answer.answer} teamName={answer.teamName} updateTeamScore={updateTeamScore}/>
 				{/each}
 			{/if}
 		</div>
