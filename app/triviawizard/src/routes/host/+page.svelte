@@ -25,7 +25,8 @@
 		const event = {
 			type: 'updateAcceptingAnswers',
 			acceptingAnswers: acceptingAnswers,
-			questionIndex: questionIndex
+			questionIndex: questionIndex,
+			timeRemaining: timerElement.timeRemaining,
 		};
 		websocket.send(JSON.stringify(event));
 	};

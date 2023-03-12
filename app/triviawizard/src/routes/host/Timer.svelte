@@ -1,7 +1,9 @@
+<svelte:options accessors={true}/>
+
 <script lang="ts">
     export let duration = 30;
     export let updateAcceptingAnswers = (shouldAccept: boolean) => {};
-    let timeRemaining = duration;
+    export let timeRemaining = duration;
     let running = false;
     let interval: NodeJS.Timer;
 

@@ -32,16 +32,27 @@ class Server:
             elif event["type"] == "updateScore":
                 await self.update_score(game, event["teamName"], event["score"], event["pointsGiven"])
             elif event["type"] == "updateAcceptingAnswers":
-                await self.update_accepting_answers(game, event["acceptingAnswers"], event["questionIndex"])
+                await self.update_accepting_answers(game, event["acceptingAnswers"], event["questionIndex"], event["timeRemaining"])
             else:
                 await self.send_error(host_socket, "Unknown host request type")
 
-    async def update_accepting_answers(self, game, accepting_answers, question_index):
+    # this is synonymous with timer updates
+    async def update_accepting_answers(self, game, accepting_answers, question_index, time_remaining):
         if question_index != game.question_index:
             print("ignoring updateAcceptingAnswers because question index doesn't match")
             return
         game.accepting_answers = accepting_answers
+        await self.update_score_view_timer(game, accepting_answers, time_remaining)
         await self.update_player_accepting_answers(game, accepting_answers)
+
+    async def update_score_view_timer(self, game, timer_running, time_remaining):
+        event = {
+            "type": "updateTimer",
+            "timerRunning": timer_running,
+            "timeRemaining": time_remaining
+        }
+        for watch_socket in game.watch_sockets:
+            await watch_socket.send(json.dumps(event))
 
     async def update_player_accepting_answers(self, game, accepting_answers):
         event = {
@@ -104,9 +115,9 @@ class Server:
             
     async def update_score_view(self, game):
         event = {
-                "type": "teamScores",
-                "gameCode": game.game_code,
-                "teamScores": game.get_scores()
+            "type": "teamScores",
+            "gameCode": game.game_code,
+            "teamScores": game.get_scores()
         }
 
         for socket in game.watch_sockets:

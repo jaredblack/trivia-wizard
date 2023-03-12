@@ -1,11 +1,13 @@
 <script lang="ts">
 	import type { TeamScore } from "../../types";
 	import { getWebSocketServer } from "../../utils";
+	import ViewOnlyTimer from "./ViewOnlyTimer.svelte";
 
     let teamScores: TeamScore[] = [];
     let gameCode: string;
     let websocket: WebSocket;
     let connected = false;
+    let timerElement: ViewOnlyTimer;
 
 
     function watchGame() {
@@ -24,6 +26,14 @@
             console.log(obj);
             if (obj.type == 'teamScores') {
                 teamScores = obj.teamScores;
+            } else if (obj.type == 'updateTimer') {
+                console.log("Update timer called")
+                timerElement.timeRemaining = obj.timeRemaining;
+                if (obj.timerRunning) {
+                    timerElement.start();
+                } else {
+                    timerElement.stop();
+                }
             }
         });
     }
@@ -43,6 +53,7 @@
             <button on:click={watchGame}>Watch game</button>
         {:else}
         <h4 class="right-justify">Game code: {gameCode}</h4>
+        <ViewOnlyTimer bind:this={timerElement}/>
         <h1>Teams:</h1>
         <ol>
         {#each teamScores as team}
