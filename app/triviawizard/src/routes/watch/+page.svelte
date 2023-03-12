@@ -25,7 +25,7 @@
             const obj = JSON.parse(data);
             console.log(obj);
             if (obj.type == 'teamScores') {
-                teamScores = obj.teamScores;
+                teamScores = obj.teamScores.sort((a: TeamScore, b: TeamScore) => b.score - a.score);
             } else if (obj.type == 'updateTimer') {
                 console.log("Update timer called")
                 timerElement.timeRemaining = obj.timeRemaining;
