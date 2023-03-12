@@ -22,7 +22,7 @@
         running = false;
     }
 
-    function reset() {
+    export function reset() {
         stop();
         timeRemaining = duration;
     }

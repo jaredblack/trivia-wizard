@@ -9,6 +9,7 @@
 	let connected = false;
 	let answerList: AnswerObject[] = [];
 	let questionIndex = 0;
+	let timerElement: Timer;
 
 	const updateTeamScore = (teamName: string, teamScore: number, pointsGiven: number) => {
 		const event = {
@@ -71,6 +72,7 @@
 			} else if (obj.type == 'newQuestion') {
                 answerList = obj.answers;
                 questionIndex = obj.questionIndex;
+				timerElement.reset();
 			}
 		});
 	}
@@ -122,7 +124,7 @@
 					>
 				</div>
 			</div>
-			<Timer duration={30} {updateAcceptingAnswers}/>
+			<Timer duration={30} {updateAcceptingAnswers} bind:this={timerElement}/>
 			<h3>Answers</h3>
 			{#if answerList.length == 0}
 				<p>No answers yet</p>
