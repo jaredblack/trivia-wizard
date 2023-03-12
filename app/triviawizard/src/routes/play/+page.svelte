@@ -2,7 +2,7 @@
 	import { getWebSocketServer } from "../../utils";
     enum States {
         NotConnected,
-        WaitForNextQuestion,
+        AnswersNotAllowed,
         InputAnswer
     }
 
@@ -16,6 +16,7 @@
     let answerText = "";
     let websocket: WebSocket;
     let questionIndex = 0;
+    
     function joinGame() {
         if (gameCode === "" || gameCode.length != 5) {
             gameCodeInvalid = true;
@@ -41,20 +42,30 @@
         receiveMessages(websocket);
     }
 
+    function updateAcceptingAnswers(acceptingAnswers: boolean) {
+        if (acceptingAnswers) {
+            state = States.InputAnswer;
+        } else {
+            state = States.AnswersNotAllowed;
+        }
+    }
+
 	function receiveMessages(websocket: WebSocket) {
         websocket.addEventListener("message", ({data}) => {
             const obj = JSON.parse(data);
             console.log(obj);
             if (obj.type === "success") {
                 // TODO: this really should update to a correct state based on if we've submitted an answer for that question yet
-                state = States.InputAnswer;
                 questionIndex = obj.questionIndex;
+                updateAcceptingAnswers(obj.acceptingAnswers);
             } else if (obj.type === "answerReceived") {
-                state = States.WaitForNextQuestion;
+                state = States.AnswersNotAllowed;
             } else if (obj.type === "updatePlayerQuestionIndex") {
                 state = States.InputAnswer;
                 answerText = "";
                 questionIndex = obj.questionIndex;
+            } else if (obj.type === "updateAcceptingAnswers") {
+                updateAcceptingAnswers(obj.acceptingAnswers);
             }
         });
 	}
@@ -89,8 +100,8 @@
             <h1>Question {questionIndex}</h1>
             <textarea bind:value={answerText} name="Answer" id="answerText" cols="30" rows="10"></textarea>
             <button on:click={submitAnswer}>Submit Answer</button>
-        {:else if state === States.WaitForNextQuestion}
-            <p>Waiting for next question...</p>
+        {:else if state === States.AnswersNotAllowed}
+            <p>Answers not allowed yet...or maybe we're just waiting for the next question</p>
         {/if}
     {/if}
 </main>

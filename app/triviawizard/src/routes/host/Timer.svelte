@@ -1,11 +1,13 @@
 <script lang="ts">
     export let duration = 30;
+    export let updateAcceptingAnswers = (shouldAccept: boolean) => {};
     let timeRemaining = duration;
     let running = false;
     let interval: NodeJS.Timer;
 
     function start() {
         running = true;
+        updateAcceptingAnswers(true);
         interval = setInterval(() => {
             timeRemaining--;
             if (timeRemaining <= 0) {
@@ -16,6 +18,7 @@
 
     function stop() {
         clearInterval(interval);
+        updateAcceptingAnswers(false);
         running = false;
     }
 

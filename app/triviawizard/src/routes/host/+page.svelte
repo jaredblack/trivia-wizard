@@ -20,6 +20,15 @@
 		websocket.send(JSON.stringify(event));
 	};
 
+	const updateAcceptingAnswers = (acceptingAnswers: boolean) => {
+		const event = {
+			type: 'updateAcceptingAnswers',
+			acceptingAnswers: acceptingAnswers,
+			questionIndex: questionIndex
+		};
+		websocket.send(JSON.stringify(event));
+	};
+
 	async function generateGameCode() {
 		const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
 		const jsonCook = await res.json();
@@ -113,7 +122,7 @@
 					>
 				</div>
 			</div>
-			<Timer duration={30} />
+			<Timer duration={30} {updateAcceptingAnswers}/>
 			<h3>Answers</h3>
 			{#if answerList.length == 0}
 				<p>No answers yet</p>

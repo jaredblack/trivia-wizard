@@ -31,8 +31,25 @@ class Server:
                 await self.broadcast_new_question(game)
             elif event["type"] == "updateScore":
                 await self.update_score(game, event["teamName"], event["score"], event["pointsGiven"])
+            elif event["type"] == "updateAcceptingAnswers":
+                await self.update_accepting_answers(game, event["acceptingAnswers"], event["questionIndex"])
             else:
                 await self.send_error(host_socket, "Unknown host request type")
+
+    async def update_accepting_answers(self, game, accepting_answers, question_index):
+        if question_index != game.question_index:
+            print("ignoring updateAcceptingAnswers because question index doesn't match")
+            return
+        game.accepting_answers = accepting_answers
+        await self.update_player_accepting_answers(game, accepting_answers)
+
+    async def update_player_accepting_answers(self, game, accepting_answers):
+        event = {
+            "type": "updateAcceptingAnswers",
+            "acceptingAnswers": accepting_answers
+        }
+        for player in game.players:
+            await player.send(json.dumps(event))
 
     async def update_score(self, game, team_name, score, points_given):
         game.update_score(team_name, score)
@@ -127,7 +144,8 @@ class Server:
                 "type": "success",
                 "message": "Successfully joined the game",
                 "gameCode": game_code,
-                "questionIndex": game.question_index
+                "questionIndex": game.question_index,
+                "acceptingAnswers": game.accepting_answers
             }
             await player_socket.send(json.dumps(event))
             await self.relay_answers(player_socket, game)

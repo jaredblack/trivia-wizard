@@ -9,7 +9,8 @@ class Game:
         self.host_socket = host_socket
         self.players = []
         self.watch_sockets = []
-        self.db = TriviaDatabase()        
+        self.db = TriviaDatabase()  
+        self.accepting_answers = False      
     
     def add_player(self, player_socket):
         self.players.append(player_socket)
