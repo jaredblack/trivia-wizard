@@ -9,6 +9,11 @@ from gamestate import Game
 
 # current problem: watch socket closes for some reason before score updates
 
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 class Server:
     def __init__(self) -> None:
         asyncio.run(self.main())
@@ -39,7 +44,7 @@ class Server:
     # this is synonymous with timer updates
     async def update_accepting_answers(self, game, accepting_answers, question_index, time_remaining):
         if question_index != game.question_index:
-            print("ignoring updateAcceptingAnswers because question index doesn't match")
+            eprint("WARNING: ignoring updateAcceptingAnswers because question index doesn't match")
             return
         game.accepting_answers = accepting_answers
         await self.update_score_view_timer(game, accepting_answers, time_remaining)
@@ -88,7 +93,6 @@ class Server:
         return answers
     
     async def update_player_question_index(self, game):
-        # TODO: include info about whether each team needs to provide an answer for this question or not.
         event = {
             "type": "updatePlayerQuestionIndex",
             "questionIndex": game.question_index
@@ -101,10 +105,13 @@ class Server:
         async for message in player_socket:
             host_ws = game.host_socket
             if host_ws.close_code is not None:
-                print("WebSocket connection is closed.")
+                eprint("ERROR: Host WebSocket connection is closed.")
                 break
             # TODO: Should validate here that the question index passed actually matches the server's index
             answer_event = json.loads(message)
+            if answer_event["questionIndex"] != game.question_index:
+                print("WARNING: ignoring answer because question index doesn't match")
+                return
             answer = Answer(game.game_code, answer_event["teamName"], answer_event["answer"], int(answer_event["questionIndex"]))
             game.add_answer(answer)
             answer_received_event = {
@@ -124,13 +131,14 @@ class Server:
 
         for socket in game.watch_sockets:
             if socket.close_code is not None:
-                print("Watch socket connection is closed.")
+                print("ERROR: Watch socket connection is closed.")
+                return
             await socket.send(json.dumps(event))
 
     async def create(self, websocket, game_code):
         game = Game(game_code, websocket)
         self.games[game_code] = game
-        print("Created a new game with game code", game_code)
+        print("INFO: Created a new game with game code", game_code)
         try:
             event = {
                 "type": "success",
@@ -147,10 +155,10 @@ class Server:
     async def join(self, player_socket, game_code, team_name):
         if game_code not in self.games:
             await self.send_error(player_socket, "Invalid game code")
-            print("invalid game code")
+            print("INFO: Tried to join invalid game code")
             return
         game = self.games[game_code]
-        print("Joined the game with game code", game_code)
+        print("INFO: Joined the game with game code", game_code)
         game.add_player(player_socket, team_name)
         try:
             event = {
@@ -170,15 +178,15 @@ class Server:
     async def watch(self, websocket, game_code):
         if game_code not in self.games:
             await self.send_error(websocket, "Invalid game code")
-            print("invalid game code for watch")
+            print("INFO: invalid game code for watch")
             return
         game = self.games[game_code]
-        print("Watching the game with game code", game_code)
+        print("INFO: Watching the game with game code", game_code)
         try:
             game.watch_sockets.append(websocket)
             await self.update_score_view(game)
             async for message in websocket:
-                print(message)
+                print(f"INFO: got message from a Watch view {message}")
         finally:
             # del HOST[game_code]
             pass
