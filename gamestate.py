@@ -56,4 +56,9 @@ class Game:
         # at the current question index for the given team name, find the answer and update the score
         self.db.update_points_given(
             self.game_code, team_name, self.question_index, points_given)
-        pass
+    
+    def remove_player(self, team_name):
+        del self.players[team_name]
+
+    def remove_watch_socket(self, watch_socket):
+        self.watch_sockets.remove(watch_socket)

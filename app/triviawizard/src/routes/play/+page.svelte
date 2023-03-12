@@ -18,15 +18,10 @@
     let questionIndex = 0;
     
     function joinGame() {
-        if (gameCode === "" || gameCode.length != 5) {
-            gameCodeInvalid = true;
-        } else {
-            gameCodeInvalid = false;
-        }
-        if (teamName === "") {
-            teamNameInvalid = true;
-        } else {
-            teamNameInvalid = false;
+        gameCodeInvalid = (gameCode === "" || gameCode.length != 5) ? true : false;
+        teamNameInvalid = (teamName === "") ? true : false;
+        if (gameCodeInvalid || teamNameInvalid) {
+            return;
         }
 
         websocket = new WebSocket(getWebSocketServer());
@@ -39,7 +34,13 @@
             };
             websocket.send(JSON.stringify(event));
         });
+        websocket.onclose = reconnect;
         receiveMessages(websocket);
+    }
+
+    function reconnect() {
+        console.log("Lost connection, reconnecting...");
+        setTimeout(joinGame, 1000);
     }
 
     function updateAcceptingAnswers(acceptingAnswers: boolean) {

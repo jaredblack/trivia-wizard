@@ -36,6 +36,12 @@
                 }
             }
         });
+        websocket.onclose = reconnect;
+    }
+
+    function reconnect() {
+        console.log("Lost connection, reconnecting...");
+        setTimeout(watchGame, 1000);
     }
     
 </script>

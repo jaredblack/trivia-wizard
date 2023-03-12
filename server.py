@@ -3,13 +3,10 @@ import websockets
 import asyncio
 import os
 import signal
+import sys
 
 from database import Answer, TriviaDatabase
 from gamestate import Game
-
-# current problem: watch socket closes for some reason before score updates
-
-import sys
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -137,6 +134,10 @@ class Server:
 
     async def create(self, websocket, game_code):
         game = Game(game_code, websocket)
+        if game_code in self.games:
+            await self.send_error(websocket, "Game code already exists")
+            print("INFO: Tried to create a game with an existing game code")
+            return
         self.games[game_code] = game
         print("INFO: Created a new game with game code", game_code)
         try:
@@ -149,8 +150,7 @@ class Server:
             await websocket.send(json.dumps(event))
             await self.host(websocket, self.games[game_code])
         finally:
-            # del JOIN[game_code]
-            pass
+            del self.games[game_code]
 
     async def join(self, player_socket, game_code, team_name):
         if game_code not in self.games:
@@ -171,9 +171,7 @@ class Server:
             await player_socket.send(json.dumps(event))
             await self.relay_answers(player_socket, game)
         finally:
-            # del HOST[game_code]
-            # TODO: figure out what we need to delete
-            pass
+            game.remove_player(team_name)
 
     async def watch(self, websocket, game_code):
         if game_code not in self.games:
@@ -188,8 +186,7 @@ class Server:
             async for message in websocket:
                 print(f"INFO: got message from a Watch view {message}")
         finally:
-            # del HOST[game_code]
-            pass
+            game.remove_watch_socket(websocket)
 
     async def handler(self, websocket):
         message = await websocket.recv()
@@ -203,7 +200,6 @@ class Server:
                 await self.join(websocket, event['gameCode'], event['teamName'])
             case "watch":
                 await self.watch(websocket, event['gameCode'])
-
 
     async def main(self):
         self.db = TriviaDatabase()

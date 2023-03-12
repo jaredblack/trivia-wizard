@@ -57,8 +57,15 @@
 			};
 			websocket.send(JSON.stringify(event));
 		});
+
+		websocket.onclose = reconnect;
 		receiveMessages(websocket);
 	}
+
+	function reconnect() {
+		console.log("Lost connection, reconnecting...");
+		setTimeout(createGame, 1000);
+	} 
 
 	function receiveMessages(websocket: WebSocket) {
 		websocket.addEventListener('message', ({ data }) => {

@@ -43,20 +43,21 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 - Svelte has some movement/transition things that could help make look things nice. Particularly, transitions when we reorder the score list could be cool.
 
 ### To-do before the demo on Monday
-- Make it so if submission is reopened on a question, teams that have already submitted can't submit again
-- Validate question index in the relay answers function, and log if things are off. This will make it a lot easier to see problems during testing.
 - Ability to smoothly reconnect (see reconnection section)
 - Scoring enhancements
     - Ability to adjust how many points a particular question is worth
     - Ability to directly adjust team scores by clicking on their score on their answer
     - Ability to let a question have "multi-scoring" - like having each correct answer in a list of answers be worth 20 points. 
 - Allow adjustment of the timer length for a given question
+- Add more input validation/auto caps to host, watch
 - **Deploy to GitHub Pages**
 
 ### Future to-do
 - Implement the doubling ability from the last trivia night
 - Parse score inputs helpfully like adding 100 points if I type +100
 
+### Things to ensure in testing
+- Ensure no way for a team to submit multiple answers for a question
 
 ## Resources
 - [WebSockets tutorial](https://websockets.readthedocs.io/en/stable/intro/tutorial3.html)
