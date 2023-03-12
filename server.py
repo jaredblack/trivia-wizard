@@ -59,7 +59,8 @@ class Server:
             "type": "updateAcceptingAnswers",
             "acceptingAnswers": accepting_answers
         }
-        for player in game.players:
+        players = game.get_players_no_answer() if event["acceptingAnswers"] else game.get_player_sockets()
+        for player in players:
             await player.send(json.dumps(event))
 
     async def update_score(self, game, team_name, score, points_given):
@@ -92,7 +93,8 @@ class Server:
             "type": "updatePlayerQuestionIndex",
             "questionIndex": game.question_index
         }
-        for player in game.players:
+        players = game.get_players_no_answer() if game.accepting_answers else game.get_player_sockets()
+        for player in players:
             await player.send(json.dumps(event))
 
     async def relay_answers(self, player_socket, game):
@@ -142,14 +144,14 @@ class Server:
             # del JOIN[game_code]
             pass
 
-    async def join(self, player_socket, game_code):
+    async def join(self, player_socket, game_code, team_name):
         if game_code not in self.games:
             await self.send_error(player_socket, "Invalid game code")
             print("invalid game code")
             return
         game = self.games[game_code]
         print("Joined the game with game code", game_code)
-        game.players.append(player_socket)
+        game.add_player(player_socket, team_name)
         try:
             event = {
                 "type": "success",
@@ -190,7 +192,7 @@ class Server:
             case "host":
                 await self.create(websocket, event['gameCode'])
             case "player":
-                await self.join(websocket, event['gameCode'])
+                await self.join(websocket, event['gameCode'], event['teamName'])
             case "watch":
                 await self.watch(websocket, event['gameCode'])
 
