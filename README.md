@@ -7,10 +7,6 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 - The host receives these answers in real time and sees them ordered according to when they were sent in.
 - The host can quickly select whether to score the answer or not based on its correctness. The game will be able to automatically apply scoring bonuses for teams who submitted the quickest.
 
-## Technology notes
-- WebSockets seem like a good fit for this project to broadcast messages between the teams and the host.
-- The server and frontend frameworks I pick probably won't matter very much. A Python server that uses the Python websockets module could be good since I am very familiar with Python.
-
 ## Basic UI notes
 - Team view - a simple page that simply displays a team's name, their current score, and a text box for them to submit the answer to the current question
 - Host view - a page that contains all the host controls. From here the host can see answers as they come in, score them as needed, and reset inputs for the next question. They can also modify game settings like point totals.
@@ -41,9 +37,25 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
 - Need to allow for a quick and easy way to reconnect if the socket connection is lost
 - Only allow for one host at a time - if there's an open host socket then we should not allow another host to join
 - TO FACILITATE THIS: listen for close on every client, and then just reconnect when that happens!
+- Also allow a team to reconnect if a team name that's already in is entered (but maybe kick out the other socket)
 
 ### Things to explore
 - Svelte has some movement/transition things that could help make look things nice. Particularly, transitions when we reorder the score list could be cool.
+
+### To-do before the demo on Monday
+- Make it so if submission is reopened on a question, teams that have already submitted can't submit again
+- Validate question index in the relay answers function, and log if things are off. This will make it a lot easier to see problems during testing.
+- Ability to smoothly reconnect (see reconnection section)
+- Scoring enhancements
+    - Ability to adjust how many points a particular question is worth
+    - Ability to directly adjust team scores by clicking on their score on their answer
+    - Ability to let a question have "multi-scoring" - like having each correct answer in a list of answers be worth 20 points. 
+- Allow adjustment of the timer length for a given question
+
+### Future to-do
+- Implement the doubling ability from the last trivia night
+- Parse score inputs helpfully like adding 100 points if I type +100
+
 
 ## Resources
 - [WebSockets tutorial](https://websockets.readthedocs.io/en/stable/intro/tutorial3.html)
