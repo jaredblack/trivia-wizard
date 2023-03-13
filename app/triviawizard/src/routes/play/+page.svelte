@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getWebSocketServer } from "../../utils";
+    import { getWebSocketServer } from '../../utils';
     enum States {
         NotConnected,
         AnswersNotAllowed,
@@ -7,31 +7,31 @@
     }
 
     let state = States.NotConnected;
-    let gameCode = "";
-    let teamName = "";
-    let errorText = "";
+    let gameCode = '';
+    let teamName = '';
+    let errorText = '';
     let connected = false;
     let gameCodeInvalid = false;
     let teamNameInvalid = false;
-    let answerText = "";
+    let answerText = '';
     let websocket: WebSocket;
     let questionIndex = 0;
-    
+
     function joinGame() {
         gameCode = gameCode.toLocaleUpperCase();
-        gameCodeInvalid = (gameCode === "" || gameCode.length != 5) ? true : false;
-        teamNameInvalid = (teamName === "") ? true : false;
+        gameCodeInvalid = gameCode === '' || gameCode.length != 5 ? true : false;
+        teamNameInvalid = teamName === '' ? true : false;
         if (gameCodeInvalid || teamNameInvalid) {
             return;
         }
 
         websocket = new WebSocket(getWebSocketServer());
-        websocket.addEventListener("open", () => {
+        websocket.addEventListener('open', () => {
             const event = {
-                type: "init",
+                type: 'init',
                 gameCode: gameCode,
                 teamName: teamName,
-                initType: "player"
+                initType: 'player'
             };
             websocket.send(JSON.stringify(event));
         });
@@ -40,7 +40,7 @@
     }
 
     function reconnect() {
-        console.log("Lost connection, reconnecting...");
+        console.log('Lost connection, reconnecting...');
         setTimeout(joinGame, 1000);
     }
 
@@ -52,48 +52,58 @@
         }
     }
 
-	function receiveMessages(websocket: WebSocket) {
-        websocket.addEventListener("message", ({data}) => {
+    function receiveMessages(websocket: WebSocket) {
+        websocket.addEventListener('message', ({ data }) => {
             const obj = JSON.parse(data);
             console.log(obj);
-            if (obj.type === "success") {
+            if (obj.type === 'success') {
                 // TODO: this really should update to a correct state based on if we've submitted an answer for that question yet
                 questionIndex = obj.questionIndex;
                 updateAcceptingAnswers(obj.acceptingAnswers);
-            } else if (obj.type === "answerReceived") {
+            } else if (obj.type === 'answerReceived') {
                 state = States.AnswersNotAllowed;
-            } else if (obj.type === "updatePlayerQuestionIndex") {
+            } else if (obj.type === 'updatePlayerQuestionIndex') {
                 state = States.InputAnswer;
-                answerText = "";
+                answerText = '';
                 questionIndex = obj.questionIndex;
-            } else if (obj.type === "updateAcceptingAnswers") {
+            } else if (obj.type === 'updateAcceptingAnswers') {
                 updateAcceptingAnswers(obj.acceptingAnswers);
-            } else if (obj.type === "error") {
+            } else if (obj.type === 'error') {
                 errorText = obj.message;
                 websocket.onclose = null;
             }
         });
-	}
+    }
 
     function submitAnswer() {
         const event = {
-            type: "answer",
+            type: 'answer',
             answer: answerText,
             teamName: teamName,
-            questionIndex: questionIndex,
+            questionIndex: questionIndex
         };
         websocket.send(JSON.stringify(event));
     }
-
-
 </script>
 
 <main class="container">
     {#if state === States.NotConnected}
         <label for="gameCodeInput">Game code</label>
-        <input type="text" id="gameCodeInput" bind:value={gameCode} placeholder="Enter game code" aria-invalid={gameCodeInvalid || null}/>
+        <input
+            type="text"
+            id="gameCodeInput"
+            bind:value={gameCode}
+            placeholder="Enter game code"
+            aria-invalid={gameCodeInvalid || null}
+        />
         <label for="teamNameInput">Team name</label>
-        <input type="text" id="teamNameInput" bind:value={teamName} placeholder="Enter team name" aria-invalid={teamNameInvalid || null}/>
+        <input
+            type="text"
+            id="teamNameInput"
+            bind:value={teamName}
+            placeholder="Enter team name"
+            aria-invalid={teamNameInvalid || null}
+        />
         <p class="error">{errorText}</p>
         <button on:click={joinGame}>Join Game</button>
     {:else}
@@ -103,7 +113,7 @@
         </div>
         {#if state === States.InputAnswer}
             <h1>Question {questionIndex}</h1>
-            <textarea bind:value={answerText} name="Answer" id="answerText" cols="30" rows="10"></textarea>
+            <textarea bind:value={answerText} name="Answer" id="answerText" cols="30" rows="10" />
             <button on:click={submitAnswer}>Submit Answer</button>
         {:else if state === States.AnswersNotAllowed}
             <p>Answers not allowed yet...or maybe we're just waiting for the next question</p>

@@ -1,4 +1,4 @@
-<svelte:options accessors={true}/>
+<svelte:options accessors={true} />
 
 <script lang="ts">
     export let duration = 30;
@@ -29,29 +29,27 @@
         timeRemaining = duration;
     }
 
-    $: timeRemaining = duration
+    $: timeRemaining = duration;
     $: minutes = Math.floor(timeRemaining / 60);
     $: seconds = timeRemaining % 60;
 </script>
 
-
 <div class="timer-container">
     {#if running}
-      <div class="timer">{minutes}:{seconds < 10 ? '0' : ''}{seconds}</div>
-      <button class="circular-icon-button" on:click={stop}><span class="material-symbols-outlined">
-        pause
-        </span></button>
+        <div class="timer">{minutes}:{seconds < 10 ? '0' : ''}{seconds}</div>
+        <button class="circular-icon-button" on:click={stop}
+            ><span class="material-symbols-outlined"> pause </span></button
+        >
     {:else}
-      <div class="timer">{minutes}:{seconds < 10 ? '0' : ''}{seconds}</div>
-      <button class="circular-icon-button" on:click={start}><span class="material-symbols-outlined">
-        play_arrow
-        </span></button>
+        <div class="timer">{minutes}:{seconds < 10 ? '0' : ''}{seconds}</div>
+        <button class="circular-icon-button" on:click={start}
+            ><span class="material-symbols-outlined"> play_arrow </span></button
+        >
     {/if}
-    <button class="circular-icon-button" on:click={reset}><span class="material-symbols-outlined">
-        restart_alt
-        </span></button>
+    <button class="circular-icon-button" on:click={reset}
+        ><span class="material-symbols-outlined"> restart_alt </span></button
+    >
 </div>
-
 
 <style>
     .timer {

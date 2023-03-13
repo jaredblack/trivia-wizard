@@ -1,15 +1,16 @@
 <script lang="ts">
-    import '@picocss/pico'
-    import '../app.css'
+    import '@picocss/pico';
+    import '../app.css';
 </script>
+
 <div class="wrapper">
     <main class="container">
         <header>
             <h1>Trivia Wizard</h1>
         </header>
     </main>
-    
-    <slot/>
+
+    <slot />
 </div>
 
 <style>
@@ -19,4 +20,3 @@
         margin-top: 1rem;
     }
 </style>
-

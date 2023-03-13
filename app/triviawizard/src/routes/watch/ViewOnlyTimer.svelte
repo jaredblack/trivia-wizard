@@ -1,4 +1,4 @@
-<svelte:options accessors={true}/>
+<svelte:options accessors={true} />
 
 <script lang="ts">
     export let duration = 30;

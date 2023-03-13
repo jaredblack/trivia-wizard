@@ -22,7 +22,8 @@ class Game:
         return self.players[team_name]
 
     def get_players_no_answer(self):
-        player_names = self.db.get_players_no_answer(self.game_code, self.question_index, self.players.keys())
+        player_names = self.db.get_players_no_answer(
+            self.game_code, self.question_index, self.players.keys())
         return [self.players[team_name] for team_name in self.players if team_name in player_names]
 
     def increment_question_index(self):
@@ -56,7 +57,7 @@ class Game:
         # at the current question index for the given team name, find the answer and update the score
         self.db.update_points_given(
             self.game_code, team_name, self.question_index, points_given)
-    
+
     def remove_player(self, team_name):
         del self.players[team_name]
 
