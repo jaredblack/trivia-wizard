@@ -29,6 +29,7 @@
         timeRemaining = duration;
     }
 
+    $: timeRemaining = duration
     $: minutes = Math.floor(timeRemaining / 60);
     $: seconds = timeRemaining % 60;
 </script>

@@ -48,9 +48,9 @@ This is intended to be a helper app for the bar trivia style I do at the trivia 
     - Ability to adjust how many points a particular question is worth
     - Ability to directly adjust team scores by clicking on their score on their answer
     - Ability to let a question have "multi-scoring" - like having each correct answer in a list of answers be worth 20 points. 
+    - Automatically grant bonuses to 1st, 2nd teams to submit
 - Allow adjustment of the timer length for a given question
 - Add more input validation/auto caps to host, watch
-- **Deploy to GitHub Pages**
 
 ### Future to-do
 - Implement the doubling ability from the last trivia night

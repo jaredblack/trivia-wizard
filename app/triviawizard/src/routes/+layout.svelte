@@ -2,13 +2,15 @@
     import '@picocss/pico'
     import '../app.css'
 </script>
-<main class="container">
-    <header>
-        <h1>Trivia Wizard</h1>
-    </header>
-</main>
-
-<slot/>
+<div class="wrapper">
+    <main class="container">
+        <header>
+            <h1>Trivia Wizard</h1>
+        </header>
+    </main>
+    
+    <slot/>
+</div>
 
 <style>
     h1 {
@@ -17,3 +19,4 @@
         margin-top: 1rem;
     }
 </style>
+

@@ -104,7 +104,6 @@ class Server:
             if host_ws.close_code is not None:
                 eprint("ERROR: Host WebSocket connection is closed.")
                 break
-            # TODO: Should validate here that the question index passed actually matches the server's index
             answer_event = json.loads(message)
             if answer_event["questionIndex"] != game.question_index:
                 print("WARNING: ignoring answer because question index doesn't match")
