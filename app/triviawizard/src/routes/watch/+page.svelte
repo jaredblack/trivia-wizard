@@ -11,6 +11,7 @@
 
 
     function watchGame() {
+        gameCode = gameCode.toLocaleUpperCase();
         websocket = new WebSocket(getWebSocketServer());
         websocket.addEventListener('open', () => {
             const event = {
@@ -34,6 +35,9 @@
                 } else {
                     timerElement.stop();
                 }
+            } else if (obj.type === "error") {
+                alert("error: " + obj.message);
+                websocket.onclose = null;
             }
         });
         websocket.onclose = reconnect;

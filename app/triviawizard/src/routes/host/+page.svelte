@@ -183,14 +183,6 @@
 </main>
 
 <style>
-	#gameCodeInput {
-		text-transform: uppercase;
-	}
-
-	#gameCodeInput::placeholder {
-		text-transform: none;
-	}
-
 	.right {
 		text-align: right;
 	}

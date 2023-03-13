@@ -18,6 +18,7 @@
     let questionIndex = 0;
     
     function joinGame() {
+        gameCode = gameCode.toLocaleUpperCase();
         gameCodeInvalid = (gameCode === "" || gameCode.length != 5) ? true : false;
         teamNameInvalid = (teamName === "") ? true : false;
         if (gameCodeInvalid || teamNameInvalid) {
@@ -67,6 +68,9 @@
                 questionIndex = obj.questionIndex;
             } else if (obj.type === "updateAcceptingAnswers") {
                 updateAcceptingAnswers(obj.acceptingAnswers);
+            } else if (obj.type === "error") {
+                errorText = obj.message;
+                websocket.onclose = null;
             }
         });
 	}
@@ -89,7 +93,7 @@
         <label for="gameCodeInput">Game code</label>
         <input type="text" id="gameCodeInput" bind:value={gameCode} placeholder="Enter game code" aria-invalid={gameCodeInvalid || null}/>
         <label for="teamNameInput">Team name</label>
-        <input type="text" id="gameCodeInput" bind:value={teamName} placeholder="Enter team name" aria-invalid={teamNameInvalid || null}/>
+        <input type="text" id="teamNameInput" bind:value={teamName} placeholder="Enter team name" aria-invalid={teamNameInvalid || null}/>
         <p class="error">{errorText}</p>
         <button on:click={joinGame}>Join Game</button>
     {:else}
