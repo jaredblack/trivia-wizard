@@ -10,6 +10,7 @@
     export let multiScoring = false;
     let pointsAdded = false;
     let numberOfAnswersCorrect: number;
+    let firstMount = true;
 
     $: numberOfAnswersCorrect = Math.floor(pointsGiven / questionPoints);
 
@@ -19,6 +20,11 @@
     $: toggleMultiScoring(multiScoring);
 
     function toggleMultiScoring(multiScoring: boolean) {
+        if (firstMount) {
+            firstMount = false;
+            return;
+        }
+        console.log("multiScoring: " + multiScoring);
         if (multiScoring) {
             pointsGiven = 0;
             if (pointsAdded) {
