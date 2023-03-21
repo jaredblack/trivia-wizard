@@ -45,7 +45,7 @@ class Server:
             return
         game.accepting_answers = accepting_answers
         await self.update_score_view_timer(game, accepting_answers, time_remaining)
-        await self.update_player_accepting_answers(game, accepting_answers)
+        await self.update_player_accepting_answers(game, accepting_answers, time_remaining)
 
     async def update_score_view_timer(self, game, timer_running, time_remaining):
         event = {
@@ -56,10 +56,11 @@ class Server:
         for watch_socket in game.watch_sockets:
             await watch_socket.send(json.dumps(event))
 
-    async def update_player_accepting_answers(self, game, accepting_answers):
+    async def update_player_accepting_answers(self, game, accepting_answers, time_remaining):
         event = {
             "type": "updateAcceptingAnswers",
-            "acceptingAnswers": accepting_answers
+            "acceptingAnswers": accepting_answers,
+            "timeRemaining": time_remaining,
         }
         players = game.get_players_no_answer() if event["acceptingAnswers"] else game.get_player_sockets()
         for player in players:

@@ -10,7 +10,7 @@
     let gameCode = '';
     let teamName = '';
     let errorText = '';
-    let connected = false;
+    let submittedAnswer = false;
     let gameCodeInvalid = false;
     let teamNameInvalid = false;
     let answerText = '';
@@ -57,17 +57,21 @@
             const obj = JSON.parse(data);
             console.log(obj);
             if (obj.type === 'success') {
-                // TODO: this really should update to a correct state based on if we've submitted an answer for that question yet
                 questionIndex = obj.questionIndex;
                 updateAcceptingAnswers(obj.acceptingAnswers);
             } else if (obj.type === 'answerReceived') {
                 state = States.AnswersNotAllowed;
             } else if (obj.type === 'updatePlayerQuestionIndex') {
                 state = States.InputAnswer;
+                submittedAnswer = false;
                 answerText = '';
                 questionIndex = obj.questionIndex;
             } else if (obj.type === 'updateAcceptingAnswers') {
                 updateAcceptingAnswers(obj.acceptingAnswers);
+                // auto-submit when timer runs out
+                if (!obj.acceptingAnswers && obj.timeRemaining === 0 && !submittedAnswer) {
+                    submitAnswer();
+                }
             } else if (obj.type === 'error') {
                 errorText = obj.message;
                 websocket.onclose = null;
@@ -76,6 +80,7 @@
     }
 
     function submitAnswer() {
+        submittedAnswer = true;
         const event = {
             type: 'answer',
             answer: answerText,

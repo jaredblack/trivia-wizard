@@ -25,8 +25,8 @@
     }
 
     export function reset() {
-        stop();
         timeRemaining = duration;
+        stop();
     }
 
     $: timeRemaining = duration;
