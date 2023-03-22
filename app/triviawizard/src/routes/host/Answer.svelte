@@ -103,9 +103,9 @@
     <div class="score-controls">
         {#if !multiScoring}
             {#if bonusGiven > 0}
-                <span>Bonus: {bonusGiven}</span>
+                <span class="bonus-display">Bonus: {bonusGiven}</span>
             {/if}
-            <div>
+            <div class="bonus-controls">
                 <button class="tiny-circular-icon-button" on:click={incrementBonus}>+</button>
                 <button class="tiny-circular-icon-button" on:click={decrementBonus}>-</button>
             </div>
@@ -163,6 +163,18 @@
 
     p {
         margin: 0;
+    }
+
+    .bonus-controls {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .bonus-display {
+        font-size: 0.9em;
+        font-style: italic;
+        color: var(--muted-color, gray);
     }
 
     .numMarkedDisplay {
