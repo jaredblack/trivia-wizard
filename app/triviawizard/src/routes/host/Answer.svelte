@@ -11,6 +11,8 @@
     let pointsAdded = false;
     let numberOfAnswersCorrect: number;
     let firstMount = true;
+    const bonusAmount = 5;
+    let bonusGiven = 0;
 
     $: numberOfAnswersCorrect = Math.floor(pointsGiven / questionPoints);
 
@@ -26,9 +28,9 @@
         }
         console.log("multiScoring: " + multiScoring);
         if (multiScoring) {
-            pointsGiven = 0;
             if (pointsAdded) {
-                teamScore -= questionPoints;
+                teamScore -= pointsGiven;
+                pointsGiven = 0;
                 pointsAdded = false;
                 updateTeamScore(teamName, teamScore, pointsGiven);
             }
@@ -56,12 +58,28 @@
     }
 
     function markQuestionIncorrect() {
-        pointsGiven = 0;
         if (pointsAdded) {
-            teamScore -= questionPoints;
+            teamScore -= pointsGiven;
+            pointsGiven = 0;
             pointsAdded = false;
             updateTeamScore(teamName, teamScore, 0);
         }
+    }
+
+    function incrementBonus() {
+        pointsGiven += bonusAmount;
+        bonusGiven += bonusAmount;
+        teamScore += bonusAmount
+        updateTeamScore(teamName, teamScore, pointsGiven);
+    }
+
+    function decrementBonus() {
+        if (bonusGiven > 0) {
+            pointsGiven -= bonusAmount;
+            bonusGiven -= bonusAmount;
+            teamScore -= bonusAmount;
+        }
+        updateTeamScore(teamName, teamScore, pointsGiven);
     }
 
     function addMultiScorePoints() {
@@ -84,6 +102,13 @@
     </div>
     <div class="score-controls">
         {#if !multiScoring}
+            {#if bonusGiven > 0}
+                <span>Bonus: {bonusGiven}</span>
+            {/if}
+            <div>
+                <button class="tiny-circular-icon-button" on:click={incrementBonus}>+</button>
+                <button class="tiny-circular-icon-button" on:click={decrementBonus}>-</button>
+            </div>
             <button
                 class="circular-icon-button secondary"
                 style="background-color: {incorrectButtonColor}"
