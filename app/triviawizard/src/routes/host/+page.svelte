@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { AnswerObject } from '../../types';
+    import { BonusIndices, type AnswerObject } from '../../types';
     import { getWebSocketServer } from '../../utils';
     import Answer from './Answer.svelte';
     import Timer from './Timer.svelte';
@@ -13,8 +13,13 @@
     let timerDuration: number = 30;
     let questionPoints: number = 50;
     let multiScoring: boolean = false;
+    let bonusIndices: BonusIndices = new BonusIndices(2);
 
     const updateTeamScore = (teamName: string, teamScore: number, pointsGiven: number) => {
+        console.log("pointsGiven: " + pointsGiven);
+        if (!multiScoring) {
+            recalculateBonuses();
+        }
         const event = {
             type: 'updateScore',
             teamName: teamName,
@@ -34,6 +39,16 @@
         websocket.send(JSON.stringify(event));
     };
 
+    const bonusWeightToApply = (teamName: string) => {
+        for (let i = 0; i < answerList.length; i++) {
+            if (answerList[i].teamName === teamName) {
+                bonusIndices.addBonusIndex(i);
+                return bonusIndices.getBonusWeight(i);
+            }
+        }
+        return 0;
+    }
+
     async function generateGameCode() {
         const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
         const jsonCook = await res.json();
@@ -41,6 +56,16 @@
             gameCode = jsonCook[0].toUpperCase();
         } else {
             alert('Error generating game code');
+        }
+    }
+
+    function recalculateBonuses() {
+        for (let i = 0; i < answerList.length; i++) {
+            if (answerList[i].pointsGiven > 0) {
+                bonusIndices.addBonusIndex(i);
+                answerList[i].teamName = "Can we change this?";
+                console.log(answerList[i].teamName);
+            }
         }
     }
 
@@ -156,10 +181,11 @@
                         answerText={answer.answer}
                         teamName={answer.teamName}
                         {updateTeamScore}
-                        teamScore={answer.teamScore}
-                        pointsGiven={answer.pointsGiven}
+                        bind:teamScore={answer.teamScore}
+                        bind:pointsGiven={answer.pointsGiven}
                         {questionPoints}
                         bind:multiScoring
+                        bonusWeight={answer.bonusWeight}
                     />
                 {/each}
             {/if}

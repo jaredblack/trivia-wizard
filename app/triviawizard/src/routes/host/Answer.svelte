@@ -8,9 +8,11 @@
     export let pointsGiven = -1;
     export let questionPoints = 50;
     export let multiScoring = false;
+    export let bonusWeight = 0;
     let pointsAdded = false;
     let numberOfAnswersCorrect: number;
     let firstMount = true;
+    const BONUS_AMOUNT = 5;
 
     $: numberOfAnswersCorrect = Math.floor(pointsGiven / questionPoints);
 
@@ -18,6 +20,13 @@
     $: incorrectButtonColor = pointsGiven == 0 ? 'var(--del-color, red)' : 'var(--secondary, gray)';
     // switching between multiScoring and not will destroy previously scored point values so b careful
     $: toggleMultiScoring(multiScoring);
+    $: recalculatePointsGiven(bonusWeight)
+
+    function recalculatePointsGiven(bonusWeight: number) {
+        if (pointsGiven > 0 && !multiScoring) {
+            pointsGiven = (numberOfAnswersCorrect * questionPoints) + (bonusWeight * BONUS_AMOUNT);
+        }
+    }
 
     function toggleMultiScoring(multiScoring: boolean) {
         if (firstMount) {
@@ -33,6 +42,7 @@
                 updateTeamScore(teamName, teamScore, pointsGiven);
             }
         } else if (pointsGiven > 0) {
+            console.log("taking away points because we disabled multiscoring");
             teamScore -= pointsGiven;
             pointsGiven = 0;
             updateTeamScore(teamName, teamScore, pointsGiven);
@@ -50,7 +60,9 @@
         pointsGiven = questionPoints;
         if (!pointsAdded) {
             teamScore += pointsGiven;
+            console.log("teamScore: " + teamScore);
             updateTeamScore(teamName, teamScore, pointsGiven);
+            console.log("teamScore: " + teamScore + " pointsGiven: " + pointsGiven);
         }
         pointsAdded = true;
     }
