@@ -156,8 +156,8 @@
                         answerText={answer.answer}
                         teamName={answer.teamName}
                         {updateTeamScore}
-                        teamScore={answer.teamScore}
-                        pointsGiven={answer.pointsGiven}
+                        bind:teamScore={answer.teamScore}
+                        bind:pointsGiven={answer.pointsGiven}
                         {questionPoints}
                         bind:multiScoring
                     />
