@@ -14,7 +14,7 @@
     const bonusAmount = 5;
     let bonusGiven = 0;
 
-    $: numberOfAnswersCorrect = Math.floor(pointsGiven / questionPoints);
+    $: numberOfAnswersCorrect = Math.floor(pointsGiven / questionPoints) + 1;
 
     $: correctButtonColor = pointsGiven > 0 ? 'var(--ins-color, green)' : 'var(--secondary, gray)';
     $: incorrectButtonColor = pointsGiven == 0 ? 'var(--del-color, red)' : 'var(--secondary, gray)';

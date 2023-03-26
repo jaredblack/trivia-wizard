@@ -65,9 +65,15 @@
             <h1>Teams:</h1>
             <ol>
                 {#each teamScores as team}
-                    <li>{team.teamName}: {team.score}</li>
+                    <li class="team-score">{team.teamName}: {team.score}</li>
                 {/each}
             </ol>
         {/if}
     </div>
 </div>
+
+<style>
+    .team-score {
+        font-size: 2em;
+    }
+</style>
