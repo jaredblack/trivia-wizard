@@ -153,6 +153,7 @@ class Server:
             del self.games[game_code]
 
     async def join(self, player_socket, game_code, team_name):
+        team_name = team_name.strip()
         if game_code not in self.games:
             await self.send_error(player_socket, "Invalid game code")
             print("INFO: Tried to join invalid game code")

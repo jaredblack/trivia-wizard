@@ -45,6 +45,7 @@ class Game:
         self.db.insert_answer(answer)
 
     def update_score(self, teamName, score):
+        print(f"Updating team {teamName}'s score to {score}")
         self.db.update_score(self.game_code, teamName, score)
 
     def get_scores(self):
