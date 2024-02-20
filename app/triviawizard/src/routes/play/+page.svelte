@@ -19,6 +19,7 @@
 
     function joinGame() {
         gameCode = gameCode.toLocaleUpperCase();
+        teamName = teamName.trim();
         gameCodeInvalid = gameCode === '' || gameCode.length != 5 ? true : false;
         teamNameInvalid = teamName === '' ? true : false;
         if (gameCodeInvalid || teamNameInvalid) {
