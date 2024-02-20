@@ -75,7 +75,11 @@
             const obj = JSON.parse(data);
             if (obj.type == 'answer') {
                 console.log(obj);
-                answerList = [...answerList, obj];
+                // been having a bug where a single answer will appear like 20 times on the screen so hopefully
+                // this guard will fix it. I'm not sure what causes it though so it's hard for me to test 
+                if (!answerList.includes(obj)) {
+                    answerList = [...answerList, obj];
+                }
             } else if (obj.type == 'success') {
                 console.log(obj);
                 connected = true;
@@ -86,6 +90,8 @@
                 timerElement.reset();
                 // TODO: these two should be kept track of on a per-question basis so we can see how many points things were worth/how much time looking back
                 // I don't think this will be a huge problem though and it would require creating a notion of a Question in the db which we don't have currently
+                // 1 year later: actually the main problem here is that we are not saving multiScoring so if you go back to a question that had multiScoring
+                // weird things can happen.
                 timerDuration = 30;
                 questionPoints = 50;
                 multiScoring = false;
