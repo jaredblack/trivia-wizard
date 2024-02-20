@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { getWebSocketServer } from '../../utils';
     enum States {
         NotConnected,
@@ -16,6 +17,18 @@
     let answerText = '';
     let websocket: WebSocket;
     let questionIndex = 0;
+    let triedToRejoin = false;
+
+    onMount(async () => {
+        const savedGameCode = localStorage.getItem('gameCode');
+        const savedTeamName = localStorage.getItem('teamName');
+        if (savedGameCode && savedTeamName) {
+            triedToRejoin = true;
+            gameCode = savedGameCode;
+            teamName = savedTeamName;
+            joinGame();
+        }
+    });
 
     function joinGame() {
         gameCode = gameCode.toLocaleUpperCase();
@@ -53,11 +66,17 @@
         }
     }
 
+    function saveJoinGameInfo() {
+        localStorage.setItem('gameCode', gameCode);
+        localStorage.setItem('teamName', teamName);
+    }
+
     function receiveMessages(websocket: WebSocket) {
         websocket.addEventListener('message', ({ data }) => {
             const obj = JSON.parse(data);
             console.log(obj);
             if (obj.type === 'success') {
+                saveJoinGameInfo();
                 questionIndex = obj.questionIndex;
                 updateAcceptingAnswers(obj.acceptingAnswers);
             } else if (obj.type === 'answerReceived') {
@@ -74,7 +93,13 @@
                     submitAnswer();
                 }
             } else if (obj.type === 'error') {
-                errorText = obj.message;
+                if (triedToRejoin) {
+                    errorText = `Tried to rejoin game with code ${gameCode}, but it does not exist anymore.`;
+                    gameCode = '';
+                    teamName = '';
+                } else {
+                    errorText = obj.message;
+                }
                 websocket.onclose = null;
             }
         });
@@ -90,6 +115,8 @@
         };
         websocket.send(JSON.stringify(event));
     }
+
+    function gameCodeExists(savedGameCode: string) {}
 </script>
 
 <main class="container">
